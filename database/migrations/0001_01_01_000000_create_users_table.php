@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('poste')->nullable();
 
             $table->string('niveau_acces')->nullable();
+            $table->string('profile_picture')->nullable();
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

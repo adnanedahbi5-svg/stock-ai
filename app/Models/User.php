@@ -20,7 +20,8 @@ class User extends Authenticatable
         'role',
         'secteur',
         'poste',
-        'niveau_acces'
+        'niveau_acces',
+        'profile_picture',
     ];
 
     protected $hidden = [
@@ -58,5 +59,13 @@ class User extends Authenticatable
     public function isGestionnaire()
     {
         return $this->role === 'gestionnaire';
+    }
+    public function getProfilePictureAttribute($value): ?string
+    {
+        return $value ? asset('storage/' . $value) : null;
+    }
+    public function chatThreads() 
+    { 
+        return $this->hasMany(ChatThread::class); 
     }
 }

@@ -134,8 +134,8 @@ class DashboardController extends Controller
     {
         $rows = StockMovement::select(
             DB::raw('"dateheure"::date AS day'),
-            DB::raw("SUM(CASE WHEN type = 'entree' THEN quantite ELSE 0 END) AS entrees"),
-            DB::raw("SUM(CASE WHEN type = 'sortie' THEN quantite ELSE 0 END) AS sorties")
+            DB::raw("SUM(CASE WHEN type ILIKE 'entr%' THEN quantite ELSE 0 END) AS entrees"),
+            DB::raw("SUM(CASE WHEN type ILIKE 'sort%' THEN quantite ELSE 0 END) AS sorties")
         )
             ->where('dateheure', '>=', Carbon::now()->subDays(13)->startOfDay())
             ->groupBy(DB::raw('"dateheure"::date'))

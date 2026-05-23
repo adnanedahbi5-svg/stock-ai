@@ -12,6 +12,7 @@ use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\CommandeDetailController;
 use App\Http\Controllers\RapportController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ChatController;
 /*
 | Les routes de l'API sont préfixées par /api automatiquement
 */
@@ -42,6 +43,8 @@ Route::prefix('users')->middleware(['auth:sanctum', 'administrateur'])->group(fu
  
     // PATCH  /api/users/{id}/restore → restore a soft-deleted user
     Route::patch('/{id}/restore',   [UserController::class, 'restore']);
+    Route::post('/profile-picture', [UserController::class, 'uploadProfilePicture']);
+    Route::post('/{id}/profile-picture', [UserController::class, 'uploadProfilePicture']);
  
 });
 
@@ -134,3 +137,8 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
 });
+
+// AI Chat (Stock Assistant)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/chat/message', [ChatController::class, 'simpleChat']);
+});

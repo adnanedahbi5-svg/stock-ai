@@ -32,7 +32,7 @@ class UserController extends Controller
                 $q->where('name',  'like', '%' . $request->search . '%')
                   ->orWhere('email', 'like', '%' . $request->search . '%');
             }))
-            ->select(['id', 'name', 'email', 'role', 'secteur', 'poste', 'niveau_acces', 'email_verified_at', 'created_at'])
+            ->select(['id', 'name', 'email', 'role', 'secteur', 'poste', 'niveau_acces', 'profile_picture', 'email_verified_at', 'created_at'])
             ->paginate($request->integer('per_page', 10));
 
         return response()->json([
@@ -78,7 +78,7 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'User created successfully.',
-            'data'    => $user->only(['id', 'name', 'email', 'role', 'secteur', 'poste', 'niveau_acces', 'created_at']),
+            'data'    => $user->only(['id', 'name', 'email', 'role', 'secteur', 'poste', 'niveau_acces', 'profile_picture', 'created_at']),
         ], 201);
     }
 
@@ -92,7 +92,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $user->only(['id', 'name', 'email', 'role', 'secteur', 'poste', 'niveau_acces', 'created_at']),
+            'data'    => $user->only(['id', 'name', 'email', 'role', 'secteur', 'poste', 'profile_picture', 'niveau_acces', 'created_at']),
         ]);
     }
 
@@ -125,7 +125,7 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'User updated successfully.',
-            'data'    => $user->fresh()->only(['id', 'name', 'email', 'role', 'secteur', 'poste', 'niveau_acces', 'updated_at']),
+            'data'    => $user->fresh()->only(['id', 'name', 'email', 'role', 'secteur', 'poste', 'niveau_acces', 'profile_picture', 'updated_at']),
         ]);
     }
 
@@ -177,7 +177,29 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => "User #{$id} has been restored.",
-            'data'    => $user->fresh()->only(['id', 'name', 'email', 'role', 'secteur', 'poste', 'niveau_acces']),
+            'data'    => $user->fresh()->only(['id', 'name', 'email', 'role', 'secteur', 'poste', 'niveau_acces', 'profile_picture']),
+        ]);
+    }
+
+    public function uploadProfilePicture(Request $request, $id = null): JsonResponse{
+        $request->validate([
+            'image' => 'required|image|max:2048',
+        ]);
+
+        $user = $id ? User::findOrFail($id) : auth()->user();
+
+        $oldPath = $user->getRawOriginal('profile_picture');
+        if ($oldPath) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+        }
+
+        $path = $request->file('image')->store('profiles', 'public');
+        $user->profile_picture = $path;
+        $user->save();
+
+        return response()->json([
+            'message'         => 'Profile picture updated',
+            'profile_picture' => asset('storage/' . $path),
         ]);
     }
 }
