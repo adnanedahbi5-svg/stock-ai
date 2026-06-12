@@ -33,6 +33,7 @@ class UserFactory extends Factory
             'secteur' => fake()->word(),
             'poste' => fake()->jobTitle(),
             'niveau_acces' => fake()->randomElement(['Bas', 'Moyen', 'Haut']),
+            'profile_picture' => null,
             'remember_token' => Str::random(10),
         ];
     }
